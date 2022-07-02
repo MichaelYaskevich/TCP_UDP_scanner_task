@@ -7,18 +7,20 @@ modes_to_names = {socket.SOCK_STREAM: 'TCP', socket.SOCK_DGRAM: 'UDP'}
 
 
 def is_port_free(mode, address, sock):
+    ok = False
     try:
         if mode == socket.SOCK_STREAM:
             sock.connect(address)
-            sock.close()
-            return True
+            ok = True
         elif mode == socket.SOCK_DGRAM:
             sock.sendto(b'query', address)
             sock.recvfrom(512)
-            sock.close()
-            return True
+            ok = True
     except OSError:
-        return False
+        ok = False
+
+    sock.close()
+    return ok
 
 
 def run(host, start_port, end_port):
